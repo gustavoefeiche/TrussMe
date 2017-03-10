@@ -22,10 +22,10 @@ def calc_cos(x1,x2,dist):
     return x_dist/dist
 
 def calculate(item,coor):
-    x1 = coor[item[0]-1][0]
-    y1 = coor[item[0]-1][1]
-    x2 = coor[item[1]-1][0]
-    y2 = coor[item[1]-1][1]
+    x1 = coor[item[0]][0]
+    y1 = coor[item[0]][1]
+    x2 = coor[item[1]][0]
+    y2 = coor[item[1]][1]
 
     dist = calc_distance(x1,y1,x2,y2)
     sin = calc_sin(y1,y2,dist)
