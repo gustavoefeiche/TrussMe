@@ -4,7 +4,7 @@ import numpy as np
 ke_matrix = np.array([[1,2,-1,-2],[2,3,-2,-3],[-1,-2,1,2],[-2,-3,2,3]])#matrix de rigidez no sistema global
 material_value = 21*(10**5)
 coor = np.array([[0, 0],[0, 21],[21, 0],[21, 21]]) #matriz de coordenadas
-inci = np.array([[1,2],[1,3],[3,4],[2,4],[2,3],[1,4]]) #Matriz de inicdencia
+inci = np.array([[0,1],[0,2],[2,3],[1,3],[1,2],[0,3]]) #Matriz de incidencia
 prop = np.array([[1],[1],[1],[1],[math.sqrt(2)],[math.sqrt(2)]]) #matriz de propriedades geometricas
 mater = np.array([[material_value]]*6)
 
@@ -71,11 +71,27 @@ def k_element (element_pos, x, y):
         #print ("-s2 ", end='')
 
 
-geom_matrix = make_matrix(inci, coor)
-print (k_element(2, 1, 1))
+def make_fdeg_matrix(inci):
+    m = np.zeros((len(inci), 4)) # np.array([[0]*4]*range(len(inci)))
+    for i in range(len(inci)):
+        m[i] = [2*inci[i][0], 2*inci[i][0]+1, 2*inci[i][1], 2*inci[i][1]+1]
+    return m
 
+def calc_global_k():
+    matrix_fdeg = make_fdeg_matrix(inci)
+    max_fdeg = matrix_fdeg[-1][-1]
+    k_global_matrix = np.array([[0]*max_fdeg]*max_fdeg)
+    index = 0
+    for degrees in matrix_fdeg:
+        for x in range(len(degrees)-1):
+            for y in range(len(degrees)-1):
+                k = k_element(index,x,y)
+                k_global_matrix[degrees[x]][degrees[y]] = k
+        index+=1
+    return k_global_matrix
 
+def main():
+    calc_global_k()
 
-#k_element(1,2,3)
-#script
-#print(make_matrix(inci,coor))
+if __name__ == '__main__':
+    main()
