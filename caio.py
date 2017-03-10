@@ -46,7 +46,7 @@ def make_matrix(inci,coor):
     return new_matrix
 
 def k_element (element_pos, x, y):
-    #retorna o elemento da matrix de rigidez global nas posições x e y
+    #retorna o elemento da matrix de rigidez global nas posicoes x e y
     s = geom_matrix[element_pos][3]
     c = geom_matrix[element_pos][4]
     element = ke_matrix[x][y]
@@ -72,7 +72,7 @@ def k_element (element_pos, x, y):
 
 
 def make_fdeg_matrix(inci):
-    m = np.zeros((len(inci), 4)) # np.array([[0]*4]*range(len(inci)))
+    m = np.zeros((len(inci), 4), dtype=np.int) # np.array([[0]*4]*range(len(inci)))
     for i in range(len(inci)):
         m[i] = [2*inci[i][0], 2*inci[i][0]+1, 2*inci[i][1], 2*inci[i][1]+1]
     return m
@@ -80,18 +80,22 @@ def make_fdeg_matrix(inci):
 def calc_global_k():
     matrix_fdeg = make_fdeg_matrix(inci)
     max_fdeg = matrix_fdeg[-1][-1]
-    k_global_matrix = np.array([[0]*max_fdeg]*max_fdeg)
+    k_global_matrix = np.array([[0]*(max_fdeg+1)]*(max_fdeg+1))
     index = 0
     for degrees in matrix_fdeg:
-        for x in range(len(degrees)-1):
-            for y in range(len(degrees)-1):
+        for x in range(len(degrees)):
+            for y in range(len(degrees)):
                 k = k_element(index,x,y)
-                k_global_matrix[degrees[x]][degrees[y]] = k
+                k_global_matrix[degrees[x]][degrees[y]] += k
         index+=1
+        print(k_global_matrix)
     return k_global_matrix
 
 def main():
-    calc_global_k()
+    global geom_matrix
+    geom_matrix = make_matrix(inci,coor)
+    #print(make_matrix(inci,coor))
+    print(calc_global_k())
 
 if __name__ == '__main__':
     main()
