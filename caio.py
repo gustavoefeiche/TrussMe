@@ -50,6 +50,21 @@ def make_fdeg_matrix(inci):
         m[i] = [2*inci[i][0], 2*inci[i][0]+1, 2*inci[i][1], 2*inci[i][1]+1]
     return m
 
-#script
-#print(make_matrix(inci,coor))
-print(make_fdeg_matrix(inci))
+def calc_global_k():
+    matrix_fdeg = make_fdeg_matrix(inci)
+    max_fdeg = matrix_fdeg[-1][-1]
+    k_global_matrix = np.array([[0]*max_fdeg]*max_fdeg)
+    index = 0
+    for degrees in matrix_fdeg:
+        for x in range(len(degrees)-1):
+            for y in range(len(degrees)-1):
+                k = k_element(index,x,y)
+                k_global_matrix[degrees[x]][degrees[y]] = k
+        index+=1
+    return k_global_matrix
+
+def main():
+    calc_global_k()
+
+if __name__ == '__main__':
+    main()
