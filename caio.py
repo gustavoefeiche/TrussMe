@@ -3,7 +3,7 @@ import numpy as np
 
 material_value = 21*(10**5);
 coor = np.array([[0, 0],[0, 21],[21, 0],[21, 21]]) #matriz de coordenadas
-inci = np.array([[1,2],[1,3],[3,4],[2,4],[2,3],[1,4]]) #Matriz de inicdencia
+inci = np.array([[0,1],[0,2],[2,3],[1,3],[1,2],[0,3]]) #Matriz de incidencia
 prop = np.array([[1],[1],[1],[1],[math.sqrt(2)],[math.sqrt(2)]]) #matriz de propriedades geometricas
 mater = np.array([[material_value]]*6)
 
@@ -44,6 +44,12 @@ def make_matrix(inci,coor):
         x+=1
     return new_matrix
 
+def make_fdeg_matrix(inci):
+    m = np.zeros((len(inci), 4)) # np.array([[0]*4]*range(len(inci)))
+    for i in range(len(inci)):
+        m[i] = [2*inci[i][0], 2*inci[i][0]+1, 2*inci[i][1], 2*inci[i][1]+1]
+    return m
 
 #script
-print(make_matrix(inci,coor))
+#print(make_matrix(inci,coor))
+print(make_fdeg_matrix(inci))
