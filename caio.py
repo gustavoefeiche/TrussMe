@@ -53,22 +53,16 @@ def k_element (element_pos, x, y):
 
     if element == 1:
         return c**2
-        #print ("c2 ", end='')
     elif element == 2:
         return c*s
-        #print ("cs ", end='')
     elif element == 3:
         return s**2
-        #print ("s2 ", end='')
     elif element == -1:
         return -c**2
-        #print ("-c2 ", end='')
     elif element == -2:
         return -c*s
-        #print ("-cs ", end='')
     elif element == -3:
         return -s**2
-        #print ("-s2 ", end='')
 
 
 def make_fdeg_matrix(inci):
