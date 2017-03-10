@@ -1,7 +1,8 @@
 import math
 import numpy as np
 
-material_value = 21*(10**5);
+ke_matrix = np.array([[1,2,-1,-2],[2,3,-2,-3],[-1,-2,1,2],[-2,-3,2,3]])#matrix de rigidez no sistema global
+material_value = 21*(10**5)
 coor = np.array([[0, 0],[0, 21],[21, 0],[21, 21]]) #matriz de coordenadas
 inci = np.array([[1,2],[1,3],[3,4],[2,4],[2,3],[1,4]]) #Matriz de inicdencia
 prop = np.array([[1],[1],[1],[1],[math.sqrt(2)],[math.sqrt(2)]]) #matriz de propriedades geometricas
@@ -44,6 +45,37 @@ def make_matrix(inci,coor):
         x+=1
     return new_matrix
 
+def k_element (element_pos, x, y):
+    #retorna o elemento da matrix de rigidez global nas posições x e y
+    s = geom_matrix[element_pos][3]
+    c = geom_matrix[element_pos][4]
+    element = ke_matrix[x][y]
 
+    if element == 1:
+        return c**2
+        #print ("c2 ", end='')
+    elif element == 2:
+        return c*s
+        #print ("cs ", end='')
+    elif element == 3:
+        return s**2
+        #print ("s2 ", end='')
+    elif element == -1:
+        return -c**2
+        #print ("-c2 ", end='')
+    elif element == -2:
+        return -c*s
+        #print ("-cs ", end='')
+    elif element == -3:
+        return -s**2
+        #print ("-s2 ", end='')
+
+
+geom_matrix = make_matrix(inci, coor)
+print (k_element(2, 1, 1))
+
+
+
+#k_element(1,2,3)
 #script
-print(make_matrix(inci,coor))
+#print(make_matrix(inci,coor))
