@@ -80,7 +80,7 @@ def calc_global_k():
         for x in range(len(degrees)-1):
             for y in range(len(degrees)-1):
                 k = k_element(index,x,y)
-                k_global_matrix[degrees[x]][degrees[y]] = k
+                k_global_matrix[degrees[x]][degrees[y]] += k
         index+=1
     return k_global_matrix
 
