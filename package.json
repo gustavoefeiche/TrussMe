@@ -5,7 +5,8 @@
     "start": "meteor run"
   },
   "dependencies": {
-    "meteor-node-stubs": "~0.2.0",
-    "babel-runtime": "6.18.0"
+    "babel-runtime": "6.18.0",
+    "makerjs": "^0.9.41",
+    "meteor-node-stubs": "~0.2.0"
   }
 }
