@@ -7,6 +7,10 @@ coor = np.array([[0, 0],[0, 21],[21, 0],[21, 21]]) #matriz de coordenadas
 inci = np.array([[0,1],[0,2],[2,3],[1,3],[1,2],[0,3]]) #Matriz de incidencia
 prop = np.array([[1],[1],[1],[1],[math.sqrt(2)],[math.sqrt(2)]]) #matriz de propriedades geometricas
 mater = np.array([[material_value]]*6)
+bc_nodes = np.array([1,1,1,1,0,0,0,0])
+force_matrix = np.array([[0]]*8)
+#adicionando forcas
+force_matrix[7] = -1000;
 
 def calc_distance(x1, y1, x2, y2):
     x_dist = (x2 - x1)
@@ -55,16 +59,22 @@ def k_element (element_pos, x, y):
 
     if element == 1:
         return c**2
+        #print ("c2 ", end='')
     elif element == 2:
         return c*s
+        #print ("cs ", end='')
     elif element == 3:
         return s**2
+        #print ("s2 ", end='')
     elif element == -1:
         return -c**2
+        #print ("-c2 ", end='')
     elif element == -2:
         return -c*s
+        #print ("-cs ", end='')
     elif element == -3:
         return -s**2
+        #print ("-s2 ", end='')
 
 
 def make_fdeg_matrix(inci):
@@ -73,28 +83,37 @@ def make_fdeg_matrix(inci):
         m[i] = [2*inci[i][0], 2*inci[i][0]+1, 2*inci[i][1], 2*inci[i][1]+1]
     return m
 
+def boundaries_conditions(matrix):
+    deleted = 0
+    for i in range(len(bc_nodes)):
+        if(bc_nodes[i] == 1):
+            matrix = np.delete(matrix, (i - deleted), 0)
+            matrix = np.delete(matrix, (i - deleted), 1)
+            deleted += 1
+    return matrix
+
 def calc_global_k():
     matrix_fdeg = make_fdeg_matrix(inci)
     max_fdeg = matrix_fdeg[-1][-1]
+    print(matrix_fdeg)
     k_global_matrix_pre = np.array([[0]*(max_fdeg+1)]*(max_fdeg+1))
     k_global_matrix = k_global_matrix_pre.astype(float)
     index = 0
     for degrees in matrix_fdeg:
-        print(degrees)
-        print(index)
         for x in range(len(degrees)):
             for y in range(len(degrees)):
-                k = k_element(index,x,y)
+                k = k_element(index,y,x)
                 k *= (prop[index][0] * mater[index][0])/geom_matrix[index][2]
                 k_global_matrix[degrees[x]][degrees[y]] += k
         index+=1
+    k_global_matrix = np.array(k_global_matrix)
+    print(k_global_matrix)
+    k_global_matrix = boundaries_conditions(k_global_matrix)
     return k_global_matrix
 
 def main():
     global geom_matrix
     geom_matrix = make_matrix(inci,coor)
-    print(geom_matrix);
-    #print(make_matrix(inci,coor))
     print(calc_global_k())
 
 if __name__ == '__main__':
