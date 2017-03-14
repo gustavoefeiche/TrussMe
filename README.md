@@ -1,2 +1,1 @@
-# temp-Mecsol
-# !MUDAR NOME DO REPO APÓS DEFINIR NOME DO PROGRAMA
+# TrussMe
