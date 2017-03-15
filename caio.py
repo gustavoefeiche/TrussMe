@@ -92,6 +92,15 @@ def matrix_boundaries_conditions(matrix):
             deleted += 1
     return matrix
 
+def matrix_result_boundaries_conditions(matrix):
+    deleted = 0
+    for i in range(len(bc_nodes)):
+        if(bc_nodes[i] == 1):
+            matrix = np.delete(matrix, (i - deleted), 0)
+            matrix = np.delete(matrix, (len(bc_nodes) - i), 1)
+            deleted += 1
+    return matrix
+
 def force_boundaries_conditions(force_matrix):
     deleted = 0
     for i in range(len(bc_nodes)):
@@ -103,7 +112,6 @@ def force_boundaries_conditions(force_matrix):
 def calc_global_k():
     matrix_fdeg = make_fdeg_matrix(inci)
     max_fdeg = matrix_fdeg[-1][-1]
-    print(matrix_fdeg)
     k_global_matrix_pre = np.array([[0]*(max_fdeg+1)]*(max_fdeg+1))
     k_global_matrix = k_global_matrix_pre.astype(float)
     index = 0
@@ -128,11 +136,12 @@ def fill_displacement_matrix(displacement_matrix):
 def calc_displacement(k_global_matrix, force_matrix):
     k_global_matrix = matrix_boundaries_conditions(k_global_matrix)
     k_global_matrix = np.linalg.inv(k_global_matrix)
-    print(k_global_matrix)
     force_matrix = force_boundaries_conditions(force_matrix)
-    print(force_matrix)
     displacement_matrix = k_global_matrix.dot(force_matrix)
     return displacement_matrix
+
+def calc_result_matrix(k_global_matrix,force_matrix):
+
 
 def main():
     global geom_matrix
