@@ -120,7 +120,7 @@ def calc_global_k():
             for y in range(len(degrees)):
                 k = k_element(index,y,x)
                 k *= (prop[index][0] * mater[index][0])/geom_matrix[index][2]
-                k_global_matrix[degrees[x]][degrees[y]] += (10**5)*2*k
+                k_global_matrix[degrees[x]][degrees[y]] += k*(10**5)
         index+=1
     k_global_matrix = np.array(k_global_matrix)
     k_global_matrix = np.fliplr(k_global_matrix)
@@ -139,9 +139,9 @@ def calc_displacement(k_global_matrix, force_matrix):
     displacement_matrix = k_global_matrix.dot(force_matrix)
     return displacement_matrix
 
-def calc_result_matrix(k_global_matrix,force_matrix):
+def calc_result_matrix(k_global_matrix,matrix):
     k_global_matrix = matrix_result_boundaries_conditions(k_global_matrix)
-    k_global_matrix.dot(force_matrix)
+    k_global_matrix.dot(matrix)
     return k_global_matrix
 
 def main():
@@ -149,9 +149,13 @@ def main():
     global force_matrix
     geom_matrix = make_matrix(inci,coor)
     k_global_matrix = calc_global_k()
+    print(k_global_matrix)
     force_matrix = force_boundaries_conditions(force_matrix)
+    print(force_matrix)
     displacement_matrix = calc_displacement(k_global_matrix, force_matrix)
-    result_matrix = calc_result_matrix(k_global_matrix,displacement_matrix)
+    print(displacement_matrix)
+    result_matrix = calc_result_matrix(k_global_matrix, displacement_matrix)
+    print(result_matrix)
     displacement_matrix = fill_displacement_matrix(displacement_matrix)
 
 if __name__ == '__main__':
