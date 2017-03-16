@@ -2,6 +2,7 @@ import math
 import numpy as np
 
 ke_matrix = np.array([[1,2,-1,-2],[2,3,-2,-3],[-1,-2,1,2],[-2,-3,2,3]])#matrix de rigidez no sistema global
+strain_stress_calc_matrix = np.array([["-c","-s","c","s"]])
 material_value = 21#*(10**5)
 coor = np.array([[0, 0],[0, 21],[21, 0],[21, 21]]) #matriz de coordenadas
 inci = np.array([[0,1],[0,2],[2,3],[1,3],[1,2],[0,3]]) #Matriz de incidencia
@@ -51,11 +52,11 @@ def make_matrix(inci,coor):
         x+=1
     return new_matrix
 
-def k_element (element_pos, x, y):
+def calc_element (element_pos, y, x = 0 , matrix = ke_matrix):
     #retorna o elemento da matrix de rigidez global nas posicoes x e y
     s = float(geom_matrix[element_pos][3])
     c = float(geom_matrix[element_pos][4])
-    element = ke_matrix[x][y]
+    element = matrix[x][y]
 
     if element == 1:
         return c**2
@@ -75,7 +76,18 @@ def k_element (element_pos, x, y):
     elif element == -3:
         return -s**2
         #print ("-s2 ", end='')
-
+    elif element == "-c":
+        return -c
+        #print ("-s2 ", end='')
+    elif element == "-s":
+        return -s
+        #print ("-s2 ", end='')
+    elif element == "c":
+        return c
+        #print ("-s2 ", end='')
+    elif element == "s":
+        return s
+        #print ("-s2 ", end='')
 
 def make_fdeg_matrix(inci):
     m = np.zeros((len(inci), 4), dtype=np.int) # np.array([[0]*4]*range(len(inci)))
@@ -83,14 +95,22 @@ def make_fdeg_matrix(inci):
         m[i] = [2*inci[i][0], 2*inci[i][0]+1, 2*inci[i][1], 2*inci[i][1]+1]
     return m
 
-def matrix_boundaries_conditions(matrix):
+def matrix_boundaries_conditions(matrix, bound = bc_nodes):
     deleted = 0
-    for i in range(len(bc_nodes)):
-        if(bc_nodes[i] == 1):
+    for i in range(len(bound)):
+        if(bound[i] == 1):
             matrix = np.delete(matrix, (i - deleted), 0)
             matrix = np.delete(matrix, (i - deleted), 1)
             deleted += 1
     return matrix
+
+def matrix_boundaries_conditions_strain(matrix, bound):
+    deleted = 0
+    for item in bound:
+        matrix = np.delete(matrix, item - deleted)
+        deleted += 1
+    return matrix
+
 def matrix_reaction_node_boundaries_conditions(matrix):
     deleted = 0
     for i in range(len(bc_nodes)):
@@ -109,7 +129,6 @@ def force_boundaries_conditions(force_matrix):
     return force_matrix
 
 def calc_global_k():
-    matrix_fdeg = make_fdeg_matrix(inci)
     max_fdeg = matrix_fdeg[-1][-1]
     k_global_matrix_pre = np.array([[0]*(max_fdeg+1)]*(max_fdeg+1))
     k_global_matrix = k_global_matrix_pre.astype(float)
@@ -117,7 +136,7 @@ def calc_global_k():
     for degrees in matrix_fdeg:
         for x in range(len(degrees)):
             for y in range(len(degrees)):
-                k = k_element(index,y,x)
+                k = calc_element(index,y,x)
                 k *= (prop[index][0] * mater[index][0])/geom_matrix[index][2]
                 k_global_matrix[degrees[x]][degrees[y]] += k*(10**5)
         index+=1
@@ -143,16 +162,34 @@ def calc_reaction_node_matrix(k_global_matrix,matrix):
     k_global_matrix = k_global_matrix.dot(matrix)
     return k_global_matrix
 
+def calc_strain(d_matrix):
+    strain = np.array([0]*len(geom_matrix))
+    sin_cos_matrix = np.array([0]*4)
+    for element in range(len(geom_matrix)):
+        for i in range(4):
+            sin_cos_matrix[i] = calc_element(element, i, 0, matrix = strain_stress_calc_matrix)
+        print(sin_cos_matrix)
+        u = np.array(matrix_boundaries_conditions_strain(d_matrix,matrix_fdeg[element]))
+        #print(u)
+        m = u.dot(sin_cos_matrix)
+        #print(m)
+        a_strain = (1 / geom_matrix[element][2]) * m
+        strain[element] = a_strain
+    return strain
+
 def main():
     global geom_matrix
     global force_matrix
+    global matrix_fdeg
+    matrix_fdeg = make_fdeg_matrix(inci)
     geom_matrix = make_matrix(inci,coor)
     k_global_matrix = calc_global_k()
     force_matrix = force_boundaries_conditions(force_matrix)
     displacement_matrix = calc_displacement(k_global_matrix, force_matrix)
     reaction_node_matrix = calc_reaction_node_matrix(k_global_matrix, displacement_matrix)
-    print(reaction_node_matrix)
     displacement_matrix = fill_displacement_matrix(displacement_matrix)
+    strain = calc_strain(displacement_matrix)
+    print(strain)
 
 if __name__ == '__main__':
     main()
