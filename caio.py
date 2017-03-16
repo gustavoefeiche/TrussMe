@@ -7,7 +7,7 @@ coor = np.array([[0, 0],[0, 21],[21, 0],[21, 21]]) #matriz de coordenadas
 inci = np.array([[0,1],[0,2],[2,3],[1,3],[1,2],[0,3]]) #Matriz de incidencia
 prop = np.array([[1],[1],[1],[1],[math.sqrt(2)],[math.sqrt(2)]]) #matriz de propriedades geometricas
 mater = np.array([[material_value]]*6)
-bc_nodes = np.array([1,1,0,0,1,1,0,0])
+bc_nodes = np.array([1,1,1,1,0,0,0,0])
 force_matrix = np.array([[0]]*8)
 #adicionando forcas
 force_matrix[7] = -1000;
@@ -120,7 +120,7 @@ def calc_global_k():
             for y in range(len(degrees)):
                 k = k_element(index,y,x)
                 k *= (prop[index][0] * mater[index][0])/geom_matrix[index][2]
-                k_global_matrix[degrees[x]][degrees[y]] += (10**5)*k
+                k_global_matrix[degrees[x]][degrees[y]] += (10**5)*2*k
         index+=1
     k_global_matrix = np.array(k_global_matrix)
     k_global_matrix = np.fliplr(k_global_matrix)
@@ -136,7 +136,6 @@ def fill_displacement_matrix(displacement_matrix):
 def calc_displacement(k_global_matrix, force_matrix):
     k_global_matrix = matrix_boundaries_conditions(k_global_matrix)
     k_global_matrix = np.linalg.inv(k_global_matrix)
-    force_matrix = force_boundaries_conditions(force_matrix)
     displacement_matrix = k_global_matrix.dot(force_matrix)
     return displacement_matrix
 
@@ -147,13 +146,13 @@ def calc_result_matrix(k_global_matrix,force_matrix):
 
 def main():
     global geom_matrix
+    global force_matrix
     geom_matrix = make_matrix(inci,coor)
     k_global_matrix = calc_global_k()
+    force_matrix = force_boundaries_conditions(force_matrix)
     displacement_matrix = calc_displacement(k_global_matrix, force_matrix)
+    result_matrix = calc_result_matrix(k_global_matrix,displacement_matrix)
     displacement_matrix = fill_displacement_matrix(displacement_matrix)
-    print(displacement_matrix)
-    result_matrix = calc_result_matrix(k_global_matrix,force_matrix)
-    print(result_matrix)
 
 if __name__ == '__main__':
     main()
