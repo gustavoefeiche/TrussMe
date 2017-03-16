@@ -91,7 +91,7 @@ def matrix_boundaries_conditions(matrix):
             matrix = np.delete(matrix, (i - deleted), 1)
             deleted += 1
     return matrix
-def matrix_result_boundaries_conditions(matrix):
+def matrix_reaction_node_boundaries_conditions(matrix):
     deleted = 0
     for i in range(len(bc_nodes)):
         if(bc_nodes[i] == 1):
@@ -138,8 +138,8 @@ def calc_displacement(k_global_matrix, force_matrix):
     displacement_matrix = k_global_matrix.dot(force_matrix)
     return displacement_matrix
 
-def calc_result_matrix(k_global_matrix,matrix):
-    k_global_matrix = matrix_result_boundaries_conditions(k_global_matrix)
+def calc_reaction_node_matrix(k_global_matrix,matrix):
+    k_global_matrix = matrix_reaction_node_boundaries_conditions(k_global_matrix)
     k_global_matrix = k_global_matrix.dot(matrix)
     return k_global_matrix
 
@@ -150,8 +150,8 @@ def main():
     k_global_matrix = calc_global_k()
     force_matrix = force_boundaries_conditions(force_matrix)
     displacement_matrix = calc_displacement(k_global_matrix, force_matrix)
-    result_matrix = calc_result_matrix(k_global_matrix, displacement_matrix)
-    print(result_matrix)
+    reaction_node_matrix = calc_reaction_node_matrix(k_global_matrix, displacement_matrix)
+    print(reaction_node_matrix)
     displacement_matrix = fill_displacement_matrix(displacement_matrix)
 
 if __name__ == '__main__':
