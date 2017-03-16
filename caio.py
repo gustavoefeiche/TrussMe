@@ -140,7 +140,7 @@ def calc_displacement(k_global_matrix, force_matrix):
 
 def calc_result_matrix(k_global_matrix,matrix):
     k_global_matrix = matrix_result_boundaries_conditions(k_global_matrix)
-    k_global_matrix.dot(matrix)
+    k_global_matrix = k_global_matrix.dot(matrix)
     return k_global_matrix
 
 def main():
@@ -150,7 +150,6 @@ def main():
     k_global_matrix = calc_global_k()
     force_matrix = force_boundaries_conditions(force_matrix)
     displacement_matrix = calc_displacement(k_global_matrix, force_matrix)
-    print(displacement_matrix)
     result_matrix = calc_result_matrix(k_global_matrix, displacement_matrix)
     print(result_matrix)
     displacement_matrix = fill_displacement_matrix(displacement_matrix)
