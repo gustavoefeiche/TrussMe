@@ -163,18 +163,26 @@ def calc_reaction_node_matrix(k_global_matrix,matrix):
     return k_global_matrix
 
 def calc_strain(d_matrix):
-    strain = np.array([0]*len(geom_matrix))
-    sin_cos_matrix = np.array([0]*4)
+    print(geom_matrix)
     for element in range(len(geom_matrix)):
+        strain = []
+        U = []
+        sin_cos_matrix = []
         for i in range(4):
-            sin_cos_matrix[i] = calc_element(element, i, 0, matrix = strain_stress_calc_matrix)
+            sin_cos_matrix.append(calc_element(element, i, 0, matrix = strain_stress_calc_matrix))
+
+        u = matrix_boundaries_conditions_strain(d_matrix,matrix_fdeg[element])
+        for y in range(len(u)):
+            U.append([u[y]])
+
+        U = np.array(U)
+        sin_cos_matrix = np.array([sin_cos_matrix])
+        print(U)
         print(sin_cos_matrix)
-        u = np.array(matrix_boundaries_conditions_strain(d_matrix,matrix_fdeg[element]))
-        #print(u)
-        m = u.dot(sin_cos_matrix)
-        #print(m)
-        a_strain = (1 / geom_matrix[element][2]) * m
-        strain[element] = a_strain
+        m = U.dot(sin_cos_matrix)
+        break
+        a_strain = (1 / geom_matrix[element][2]) * m[0]
+        strain.append(a_strain)
     return strain
 
 def main():
