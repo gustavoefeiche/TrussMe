@@ -163,7 +163,6 @@ def calc_reaction_node_matrix(k_global_matrix,matrix):
     return k_global_matrix
 
 def calc_strain(d_matrix):
-    print(geom_matrix)
     for element in range(len(geom_matrix)):
         strain = []
         U = []
@@ -177,14 +176,29 @@ def calc_strain(d_matrix):
 
         U = np.array(U)
         sin_cos_matrix = np.array([sin_cos_matrix])
-        print(U)
-        print(sin_cos_matrix)
         m = U.dot(sin_cos_matrix)
         break
         a_strain = (1 / geom_matrix[element][2]) * m[0]
         strain.append(a_strain)
     return strain
 
+def calc_strain_2(displacement_matrix, matrix_fdeg):
+    strain = []
+    for i in range(len(matrix_fdeg)):
+        l = geom_matrix[i][2]
+        c = geom_matrix[i][3]
+        s = geom_matrix[i][4]
+        c_s_matrix = np.array([-c, -s, c, s])
+        u1 = displacement_matrix[matrix_fdeg[i][0]]
+        v1 = displacement_matrix[matrix_fdeg[i][1]]
+        u2 = displacement_matrix[matrix_fdeg[i][2]]
+        v2 = displacement_matrix[matrix_fdeg[i][3]]
+        element_displacement_matrix = np.array([u1,v1,u2,v2])
+        # print(c_s_matrix)
+        # print(displacement_matrix)
+        strain.append(np.dot(c_s_matrix, element_displacement_matrix)/l)
+    return strain
+    
 def main():
     global geom_matrix
     global force_matrix
@@ -197,7 +211,8 @@ def main():
     reaction_node_matrix = calc_reaction_node_matrix(k_global_matrix, displacement_matrix)
     displacement_matrix = fill_displacement_matrix(displacement_matrix)
     strain = calc_strain(displacement_matrix)
-    print(strain)
 
+    strain2 = calc_strain_2(displacement_matrix, matrix_fdeg)
+    print(strain2)
 if __name__ == '__main__':
     main()
