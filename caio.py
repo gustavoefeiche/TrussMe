@@ -176,10 +176,11 @@ def calc_strain(d_matrix):
             U.append([u[y]])
 
         U = np.array(U)
-        sin_cos_matrix = np.array([sin_cos_matrix])
+        sin_cos_matrix = np.array(sin_cos_matrix)
         print(U)
         print(sin_cos_matrix)
-        m = U.dot(sin_cos_matrix)
+        m = sin_cos_matrix.dot(U)
+        print(m)
         break
         a_strain = (1 / geom_matrix[element][2]) * m[0]
         strain.append(a_strain)
