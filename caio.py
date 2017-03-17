@@ -198,7 +198,28 @@ def calc_strain_2(displacement_matrix, matrix_fdeg):
         # print(displacement_matrix)
         strain.append(np.dot(c_s_matrix, element_displacement_matrix)/l)
     return strain
-    
+
+
+def calc_stress_2(displacement_matrix, matrix_fdeg):
+    #tensao em metros quadrados
+    stress = []
+    for i in range(len(matrix_fdeg)):
+        e = mater[i][0]
+        l = geom_matrix[i][2]
+        c = geom_matrix[i][3]
+        s = geom_matrix[i][4]
+        c_s_matrix = np.array([-c, -s, c, s])
+        u1 = displacement_matrix[matrix_fdeg[i][0]]
+        v1 = displacement_matrix[matrix_fdeg[i][1]]
+        u2 = displacement_matrix[matrix_fdeg[i][2]]
+        v2 = displacement_matrix[matrix_fdeg[i][3]]
+        element_displacement_matrix = np.array([u1,v1,u2,v2])
+        # print(c_s_matrix)
+        # print(displacement_matrix)
+        stress.append(e*np.dot(c_s_matrix, element_displacement_matrix)/l)
+
+    return stress
+
 def main():
     global geom_matrix
     global force_matrix
@@ -213,6 +234,7 @@ def main():
     strain = calc_strain(displacement_matrix)
 
     strain2 = calc_strain_2(displacement_matrix, matrix_fdeg)
-    print(strain2)
+    stress = calc_stress_2(displacement_matrix, matrix_fdeg)
+    print(stress)
 if __name__ == '__main__':
     main()
